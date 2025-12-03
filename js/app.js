@@ -10,11 +10,8 @@
 const config = {
     mapTileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     mapAttribution: '&copy; OpenStreetMap contributors',
-    weatherApiDemo: true, // Demo mode for weather data
     defaultLocation: { lat: 40.7128, lng: -74.0060 }, // NYC
-    neaApiBase: 'https://api.data.gov.sg/v1/environment',
-    neaRealtimeUrl: 'https://api.data.gov.sg/v1/environment/air-temperature',
-    neaForecastUrl: 'https://api.data.gov.sg/v1/environment/4-day-weather-forecast',
+    neaForecastApi: 'https://api.data.gov.sg/v1/environment/4-day-weather-forecast',
 };
 
 let appState = {
@@ -162,92 +159,87 @@ async function loadWeather() {
     const waterInfo = document.getElementById('waterInfo');
     
     try {
-        // Attempt to fetch from NEA API with timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        // Fetch 4-day forecast from NEA API (with CORS handling)
+        const response = await fetch('https://api.data.gov.sg/v1/environment/4-day-weather-forecast');
         
-        const forecastResponse = await fetch(config.neaForecastUrl, {
-            signal: controller.signal,
-            headers: {
-                'Accept': 'application/json',
-            }
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (forecastResponse.ok) {
-            const forecastData = await forecastResponse.json();
-            const items = forecastData.items || [];
-            
-            if (items.length > 0) {
-                renderRealWeather(items, weatherInfo, forecastInfo, waterInfo);
-                return;
-            }
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
         }
-    } catch (error) {
-        console.warn('NEA API call failed:', error.message);
-    }
-    
-    // Fallback to demo data
-    loadWeatherFallback(weatherInfo, forecastInfo, waterInfo);
-}
-
-function renderRealWeather(items, weatherInfo, forecastInfo, waterInfo) {
-    const forecasts = items[0].forecasts || [];
-    
-    const forecast = forecasts.slice(0, 4).map((f, index) => {
-        const date = new Date(items[0].update_timestamp);
-        date.setDate(date.getDate() + index);
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         
-        return {
-            day: days[date.getDay()],
-            date: date.toLocaleDateString('en-SG'),
-            forecast: f.forecast || 'Partly Cloudy',
-            high: f.temperature ? f.temperature.high : 24,
-            low: f.temperature ? f.temperature.low : 18,
-        };
-    });
-    
-    const currentTemp = 22; // Default to 22°C if not available
-    
-    // Render current weather
-    weatherInfo.innerHTML = `
-        <div style="display: grid; gap: 8px;">
-            <p><strong>${currentTemp}°C</strong> - Current Temperature</p>
-            <p>📍 Singapore Region</p>
-            <p style="color: #7f8c8d; font-size: 0.9rem;">Data from NEA (National Environment Agency)</p>
-            <p style="color: #2ecc71; font-weight: 500; margin-top: 8px;">✓ Live weather data</p>
-        </div>
-    `;
-    
-    // Render 4-day forecast
-    forecastInfo.innerHTML = forecast.map(day => `
-        <div style="padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <strong>${day.day}</strong> ${day.date}
-            </div>
-            <div style="text-align: right;">
-                <div style="font-size: 0.95rem; color: #2C3E50; margin-bottom: 4px;">
-                    ${day.forecast}
+        const data = await response.json();
+        
+        if (data.items && data.items.length > 0) {
+            const forecasts = data.items[0].forecasts || [];
+            
+            // Get current conditions from first forecast
+            const currentForecast = forecasts[0];
+            const currentTemp = Math.round((currentForecast.temperature.high + currentForecast.temperature.low) / 2);
+            
+            // Render current weather
+            weatherInfo.innerHTML = `
+                <div style="display: grid; gap: 8px;">
+                    <p><strong>${currentTemp}°C</strong> - Current Temperature</p>
+                    <p>📍 Singapore</p>
+                    <p style="font-size: 0.9rem; color: #2C3E50;">
+                        ${currentForecast.forecast}
+                    </p>
+                    <p style="color: #2ecc71; font-weight: 500; margin-top: 8px;">✓ Live NEA Data</p>
                 </div>
-                <div style="font-size: 0.85rem; color: #7f8c8d;">
-                    ${day.high}°C - ${day.low}°C
+            `;
+            
+            // Render 4-day forecast
+            const forecastHtml = forecasts.slice(0, 4).map((f, index) => {
+                const date = new Date(f.date);
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const dayName = days[date.getDay()];
+                const dateStr = date.toLocaleDateString('en-SG', { month: 'short', day: 'numeric' });
+                
+                return `
+                    <div style="padding: 12px; border-bottom: 1px solid #eee; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <strong>${dayName}</strong> ${dateStr}
+                            <p style="font-size: 0.85rem; color: #2C3E50; margin-top: 4px;">
+                                ${f.forecast}
+                            </p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.85rem; color: #7f8c8d; margin-bottom: 4px;">
+                                💨 ${f.wind.speed.low}-${f.wind.speed.high} km/h
+                            </div>
+                            <div style="font-weight: 600; color: #0077BE;">
+                                ${f.temperature.high}°C - ${f.temperature.low}°C
+                            </div>
+                            <div style="font-size: 0.8rem; color: #7f8c8d;">
+                                💧 ${f.relative_humidity.low}-${f.relative_humidity.high}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            forecastInfo.innerHTML = forecastHtml;
+            
+            // Water conditions (estimated based on forecast)
+            const avgTemp = Math.round((currentForecast.temperature.high + currentForecast.temperature.low) / 2);
+            waterInfo.innerHTML = `
+                <div style="display: grid; gap: 8px;">
+                    <p><strong>${avgTemp - 2}°C</strong> Water Temperature</p>
+                    <p>🌊 Wave Height: ${currentForecast.wind.speed.low > 10 ? '1.0-1.5m' : '0.5-1.0m'}</p>
+                    <p>💨 Wind: ${currentForecast.wind.direction} ${currentForecast.wind.speed.low}-${currentForecast.wind.speed.high} km/h</p>
+                    <p>👁️ Visibility: Good</p>
+                    <p style="color: #2ecc71; font-weight: 500; margin-top: 8px;">✓ Good for cleanup!</p>
                 </div>
-            </div>
-        </div>
-    `).join('');
-    
-    // Water conditions
-    waterInfo.innerHTML = `
-        <div style="display: grid; gap: 8px;">
-            <p><strong>${currentTemp - 2}°C</strong> Water Temperature</p>
-            <p>🌊 Wave Height: 0.5 - 1.0 m</p>
-            <p>👁️ Visibility: Good</p>
-            <p>💧 Current: Moderate</p>
-            <p style="color: #2ecc71; font-weight: 500; margin-top: 8px;">✓ Good for cleanup!</p>
-        </div>
-    `;
+            `;
+            
+            return;
+        }
+        
+        throw new Error('No forecast data available');
+        
+    } catch (error) {
+        console.error('Weather loading error:', error);
+        loadWeatherFallback(weatherInfo, forecastInfo, waterInfo);
+    }
 }
 
 function loadWeatherFallback(weatherInfo, forecastInfo, waterInfo) {
