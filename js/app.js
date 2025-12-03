@@ -161,24 +161,24 @@ async function loadWeather() {
     try {
         // Demo weather data (replace with real API calls in production)
         const currentWeather = {
-            temp: 72,
+            temp: 22,
             condition: 'Partly Cloudy',
             humidity: 65,
-            windSpeed: 12,
+            windSpeed: 19,
             windDirection: 'NE',
         };
         
         const forecast = [
-            { day: 'Mon', high: 75, low: 65, condition: '☀️ Sunny' },
-            { day: 'Tue', high: 73, low: 63, condition: '☁️ Cloudy' },
-            { day: 'Wed', high: 68, low: 60, condition: '🌧️ Rainy' },
-            { day: 'Thu', high: 71, low: 62, condition: '☀️ Sunny' },
-            { day: 'Fri', high: 76, low: 66, condition: '☀️ Sunny' },
+            { day: 'Mon', high: 24, low: 18, condition: '☀️ Sunny' },
+            { day: 'Tue', high: 23, low: 17, condition: '☁️ Cloudy' },
+            { day: 'Wed', high: 20, low: 16, condition: '🌧️ Rainy' },
+            { day: 'Thu', high: 22, low: 17, condition: '☀️ Sunny' },
+            { day: 'Fri', high: 24, low: 19, condition: '☀️ Sunny' },
         ];
         
         const waterConditions = {
-            temp: 68,
-            waveHeight: 2.5,
+            temp: 20,
+            waveHeight: 0.76,
             visibility: 'Good',
             current: 'Moderate',
         };
@@ -186,24 +186,24 @@ async function loadWeather() {
         // Render current weather
         weatherInfo.innerHTML = `
             <div style="display: grid; gap: 8px;">
-                <p><strong>${currentWeather.temp}°F</strong> - ${currentWeather.condition}</p>
+                <p><strong>${currentWeather.temp}°C</strong> - ${currentWeather.condition}</p>
                 <p>💧 Humidity: ${currentWeather.humidity}%</p>
-                <p>💨 Wind: ${currentWeather.windSpeed} mph ${currentWeather.windDirection}</p>
+                <p>💨 Wind: ${currentWeather.windSpeed} km/h ${currentWeather.windDirection}</p>
             </div>
         `;
         
         // Render forecast
         forecastInfo.innerHTML = forecast.map(day => `
             <div style="padding: 8px; border-bottom: 1px solid #eee;">
-                <strong>${day.day}</strong>: ${day.condition} (${day.high}°F/${day.low}°F)
+                <strong>${day.day}</strong>: ${day.condition} (${day.high}°C/${day.low}°C)
             </div>
         `).join('');
         
         // Render water conditions
         waterInfo.innerHTML = `
             <div style="display: grid; gap: 8px;">
-                <p><strong>${waterConditions.temp}°F</strong> Water Temperature</p>
-                <p>🌊 Wave Height: ${waterConditions.waveHeight} ft</p>
+                <p><strong>${waterConditions.temp}°C</strong> Water Temperature</p>
+                <p>🌊 Wave Height: ${waterConditions.waveHeight} m</p>
                 <p>👁️ Visibility: ${waterConditions.visibility}</p>
                 <p>💧 Current: ${waterConditions.current}</p>
                 <p style="color: #2ecc71; font-weight: 500; margin-top: 8px;">✓ Good for cleanup!</p>
