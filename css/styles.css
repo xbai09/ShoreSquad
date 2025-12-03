@@ -52,6 +52,9 @@ html {
     font-size: 16px;
 }
 
+/* Prevent sticky header from covering anchored content */
+html { scroll-padding-top: 72px; }
+
 body {
     font-family: var(--font-primary);
     line-height: 1.6;
@@ -277,10 +280,24 @@ section {
 
 .map-container {
     width: 100%;
+    min-height: 360px;
     height: 500px;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow-lg);
     margin-bottom: var(--spacing-lg);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Make any iframe inside map container responsive and full-size */
+.map-container iframe,
+.map-container > div iframe,
+.google-maps-iframe {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 300px;
+    display: block;
+    border: 0;
 }
 
 .map-controls {
