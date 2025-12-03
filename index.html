@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ShoreSquad: Rally your crew, track weather, and hit the next beach cleanup with our dope map app!">
+    <meta name="theme-color" content="#0077BE">
+    <meta name="color-scheme" content="light dark">
+    
+    <title>ShoreSquad - Beach Cleanup Crew</title>
+    
+    <!-- Leaflet for map functionality -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-sHHtytjSB0aomiodP82yyxnXzP0yxeRqXcrbfgbQvPhZCqOtf38DlgwxKclaF5v+GigAC0LV516sE6bg6f9p0w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header" role="banner">
+        <nav class="navbar" role="navigation" aria-label="main">
+            <div class="navbar-brand">
+                <span class="logo-icon">🌊</span>
+                <h1 class="logo-text">ShoreSquad</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#map-section" class="nav-link">Map</a></li>
+                <li><a href="#weather-section" class="nav-link">Weather</a></li>
+                <li><a href="#crew-section" class="nav-link">Crew</a></li>
+                <li><a href="#events-section" class="nav-link">Events</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <main>
+        <section class="hero" role="region" aria-label="hero">
+            <div class="hero-content">
+                <h2>Rally Your Crew. Clean Your Shores.</h2>
+                <p>Connect with beach lovers near you. Track weather conditions. Plan epic cleanups.</p>
+                <button class="btn btn-primary" id="getStartedBtn" aria-label="Get started with ShoreSquad">Get Started</button>
+                <button class="btn btn-secondary" id="learnMoreBtn" aria-label="Learn more about ShoreSquad">Learn More</button>
+            </div>
+            <div class="hero-image">
+                <div class="wave-animation"></div>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section id="map-section" class="map-section" role="region" aria-label="interactive map">
+            <div class="section-header">
+                <h2>Find Beaches to Clean</h2>
+                <p>Discover cleanup events near you</p>
+            </div>
+            <div id="map" class="map-container" role="application" aria-label="interactive map of beaches"></div>
+            <div class="map-controls" role="group" aria-label="map controls">
+                <button class="map-btn" id="locateBtn" title="Find my location" aria-label="Find my location">📍 My Location</button>
+                <button class="map-btn" id="createEventBtn" title="Create cleanup event" aria-label="Create cleanup event">✨ Create Event</button>
+            </div>
+        </section>
+
+        <!-- Weather Section -->
+        <section id="weather-section" class="weather-section" role="region" aria-label="weather information">
+            <div class="section-header">
+                <h2>Plan Around Weather</h2>
+                <p>Real-time conditions for optimal cleanup planning</p>
+            </div>
+            <div class="weather-grid">
+                <div class="weather-card" role="article" aria-label="current weather">
+                    <h3>Current Conditions</h3>
+                    <div id="weatherInfo" class="weather-info">
+                        <p class="loading">Loading weather...</p>
+                    </div>
+                </div>
+                <div class="weather-card" role="article" aria-label="upcoming forecast">
+                    <h3>5-Day Forecast</h3>
+                    <div id="forecastInfo" class="forecast-info">
+                        <p class="loading">Loading forecast...</p>
+                    </div>
+                </div>
+                <div class="weather-card" role="article" aria-label="water conditions">
+                    <h3>Water Conditions</h3>
+                    <div id="waterInfo" class="water-info">
+                        <p class="loading">Loading water data...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crew Section -->
+        <section id="crew-section" class="crew-section" role="region" aria-label="crew management">
+            <div class="section-header">
+                <h2>Join Your Crew</h2>
+                <p>Connect with beach lovers in your area</p>
+            </div>
+            <div class="crew-container">
+                <div class="crew-list" id="crewList" role="list">
+                    <p class="loading">Loading crew members...</p>
+                </div>
+                <div class="crew-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCrew">0</div>
+                        <div class="stat-label">Squad Members</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="cleanupCount">0</div>
+                        <div class="stat-label">Cleanups</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="itemsCollected">0</div>
+                        <div class="stat-label">Items Collected</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Events Section -->
+        <section id="events-section" class="events-section" role="region" aria-label="upcoming events">
+            <div class="section-header">
+                <h2>Upcoming Cleanups</h2>
+                <p>Join or create beach cleanup events</p>
+            </div>
+            <div class="events-container">
+                <div id="eventsList" class="events-list" role="list">
+                    <p class="loading">Loading events...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="cta-section" role="region" aria-label="call to action">
+            <h2>Ready to Make an Impact?</h2>
+            <p>Join thousands of beach lovers creating change.</p>
+            <button class="btn btn-large btn-primary" id="ctaBtn" aria-label="Join ShoreSquad now">Join ShoreSquad Today</button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShoreSquad</h3>
+                <p>Mobilizing young people to clean beaches through social connection and environmental action.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#map-section">Map</a></li>
+                    <li><a href="#crew-section">Crew</a></li>
+                    <li><a href="#events-section">Events</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <ul class="social-links">
+                    <li><a href="#" title="Facebook" aria-label="Visit ShoreSquad on Facebook">f</a></li>
+                    <li><a href="#" title="Twitter" aria-label="Visit ShoreSquad on Twitter">𝕏</a></li>
+                    <li><a href="#" title="Instagram" aria-label="Visit ShoreSquad on Instagram">📷</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 ShoreSquad. Making waves for clean beaches. 🌊</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-WXoSL2lrKOSIDHKVIkIS6mPSemQdeGUgnWX3Z8nwdeve5f/j91c06QRnLVmpupMjq7OzhQ3sp3XadinqguZeZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <!-- Main App -->
+    <script src="js/app.js" defer></script>
+</body>
+</html>
