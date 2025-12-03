@@ -54,10 +54,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 fallback.style.flexDirection = 'column';
                 fallback.style.justifyContent = 'center';
                 fallback.style.alignItems = 'center';
+                // Build an embeddable Google Maps iframe centered on the next cleanup or default to Pasir Ris
+                const defaultLat = 1.381497;
+                const defaultLng = 103.955574;
+                let lat = defaultLat, lng = defaultLng, placeLabel = 'Pasir Ris';
+                try {
+                    if (appState && appState.events && appState.events.length > 0) {
+                        lat = appState.events[0].lat || lat;
+                        lng = appState.events[0].lng || lng;
+                        placeLabel = appState.events[0].name || placeLabel;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+
+                const iframeSrc = `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+
                 fallback.innerHTML = `
-                    <strong style="font-size:1.1rem; margin-bottom:8px; display:block;">Map unavailable</strong>
-                    <div style="font-size:0.95rem; color:#7f8c8d; max-width:420px;">We couldn't load the interactive map. This can happen when third-party map tiles are blocked or the network is restricted. You can still create and view events below.</div>
-                    <button id="retryMapBtn" style="margin-top:12px;padding:8px 12px;border-radius:6px;border:none;background:#0077BE;color:#fff;cursor:pointer;">Retry Map</button>
+                    <div style="width:100%;height:100%;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;">
+                        <div style="font-size:1.1rem;font-weight:700;color:#2C3E50;">${placeLabel} — Map (static)</div>
+                        <div style="width:100%;height:320px;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+                            <iframe src="${iframeSrc}" width="100%" height="100%" style="border:0;display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map fallback - ${placeLabel}"></iframe>
+                        </div>
+                        <div style="font-size:0.95rem;color:#7f8c8d;max-width:600px;text-align:center;">We couldn't load the interactive map. This embedded map is a reliable fallback and links to Google Maps for directions or Street View.</div>
+                        <div style="display:flex;gap:8px;margin-top:6px;">
+                            <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener noreferrer" style="padding:8px 12px;border-radius:6px;background:#0077BE;color:#fff;text-decoration:none;">Open in Google Maps</a>
+                            <button id="retryMapBtn" style="padding:8px 12px;border-radius:6px;border:1px solid #0077BE;background:transparent;color:#0077BE;cursor:pointer;">Retry Map</button>
+                        </div>
+                    </div>
                 `;
                 mapEl.appendChild(fallback);
                 const retry = document.getElementById('retryMapBtn');
