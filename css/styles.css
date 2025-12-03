@@ -434,6 +434,72 @@ section {
     padding: var(--spacing-xl);
 }
 
+/* Next Cleanup Section */
+.next-cleanup-section {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 119, 190, 0.15));
+    border-radius: var(--border-radius);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    border: 2px solid var(--color-secondary);
+}
+
+.next-cleanup-section .section-header h2 {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.cleanup-info {
+    margin-bottom: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow-lg);
+}
+
+.google-maps-iframe {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.cleanup-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.cleanup-detail-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    box-shadow: var(--box-shadow);
+    border-left: 4px solid var(--color-secondary);
+    transition: var(--transition);
+}
+
+.cleanup-detail-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.cleanup-detail-card h3 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.1rem;
+}
+
+.cleanup-detail-card p {
+    margin-bottom: 0.5rem;
+    color: var(--color-dark);
+}
+
+.events-section {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(0, 119, 190, 0.1));
+    border-radius: var(--border-radius);
+    padding: var(--spacing-xl);
+}
+
 .events-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

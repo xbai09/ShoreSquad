@@ -21,6 +21,7 @@ let appState = {
     events: [],
     markers: [],
     userMarker: null,
+    nextCleanupParticipants: 0,
 };
 
 // ============================================
@@ -327,6 +328,13 @@ function joinEvent(eventId) {
         renderEvents();
         alert(`✨ Great! You joined "${event.name}"!\n👥 Total participants: ${event.participants}`);
     }
+}
+
+function joinNextCleanup() {
+    appState.nextCleanupParticipants += 1;
+    document.getElementById('nextCleanupParticipants').textContent = appState.nextCleanupParticipants;
+    alert(`✨ You're in! You've joined the Pasir Ris cleanup!\n👥 Total participants: ${appState.nextCleanupParticipants}`);
+    announceToScreenReader(`You have joined the Pasir Ris cleanup. Total participants: ${appState.nextCleanupParticipants}`);
 }
 
 // ============================================
