@@ -31,9 +31,17 @@ let appState = {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('ShoreSquad App Initializing...');
     
-    initializeMap();
+    // Initialize non-blocking features in a safe order. Map may fail to load
+    // if Leaflet is blocked or unavailable; guard so weather and UI still render.
+    try {
+        initializeMap();
+    } catch (err) {
+        console.warn('Map initialization failed, continuing without map:', err && err.message ? err.message : err);
+    }
+
     loadMockData();
     setupEventListeners();
+    // Load weather early so the weather section updates even if map errors occur
     loadWeather();
     renderCrew();
     renderEvents();
