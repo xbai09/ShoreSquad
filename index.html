@@ -199,6 +199,39 @@
     <!-- Leaflet Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-WXoSL2lrKOSIDHKVIkIS6mPSemQdeGUgnWX3Z8nwdeve5f/j91c06QRnLVmpupMjq7OzhQ3sp3XadinqguZeZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
+    <!-- Leaflet fallback loader: if the CDN is blocked or the script fails, dynamically load from unpkg -->
+    <script>
+        (function() {
+            function loadCSS(href) {
+                var l = document.createElement('link');
+                l.rel = 'stylesheet';
+                l.href = href;
+                document.head.appendChild(l);
+            }
+
+            function loadScript(src, cb) {
+                var s = document.createElement('script');
+                s.src = src;
+                s.onload = cb;
+                s.onerror = cb;
+                document.body.appendChild(s);
+            }
+
+            // If Leaflet didn't load (L undefined), try fallback after a short delay
+            if (typeof L === 'undefined') {
+                // Try to load CSS + script from unpkg
+                loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+                loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', function() {
+                    if (typeof L === 'undefined') {
+                        console.warn('Leaflet fallback failed to load. Map may remain unavailable.');
+                    } else {
+                        console.info('Leaflet fallback loaded from unpkg');
+                    }
+                });
+            }
+        })();
+    </script>
+
     <!-- Main App -->
     <script src="js/app.js" defer></script>
 </body>
