@@ -37,6 +37,37 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeMap();
     } catch (err) {
         console.warn('Map initialization failed, continuing without map:', err && err.message ? err.message : err);
+        // Show an inline fallback message to the user in the map container
+        try {
+            const mapEl = document.getElementById('map');
+            if (mapEl) {
+                mapEl.innerHTML = '';
+                const fallback = document.createElement('div');
+                fallback.setAttribute('role', 'alert');
+                fallback.style.padding = '24px';
+                fallback.style.textAlign = 'center';
+                fallback.style.color = '#2C3E50';
+                fallback.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.95))';
+                fallback.style.borderRadius = '8px';
+                fallback.style.height = '100%';
+                fallback.style.display = 'flex';
+                fallback.style.flexDirection = 'column';
+                fallback.style.justifyContent = 'center';
+                fallback.style.alignItems = 'center';
+                fallback.innerHTML = `
+                    <strong style="font-size:1.1rem; margin-bottom:8px; display:block;">Map unavailable</strong>
+                    <div style="font-size:0.95rem; color:#7f8c8d; max-width:420px;">We couldn't load the interactive map. This can happen when third-party map tiles are blocked or the network is restricted. You can still create and view events below.</div>
+                    <button id="retryMapBtn" style="margin-top:12px;padding:8px 12px;border-radius:6px;border:none;background:#0077BE;color:#fff;cursor:pointer;">Retry Map</button>
+                `;
+                mapEl.appendChild(fallback);
+                const retry = document.getElementById('retryMapBtn');
+                if (retry) retry.addEventListener('click', () => {
+                    try { mapEl.innerHTML = ''; initializeMap(); renderEvents(); } catch (e) { console.warn('Retry failed:', e); }
+                });
+            }
+        } catch (e) {
+            console.warn('Failed to render map fallback UI', e && e.message ? e.message : e);
+        }
     }
 
     loadMockData();
